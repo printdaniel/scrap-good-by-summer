@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:12
+    container_name: tempbase
+    environment:
+      - POSTGRES_DB=db
+      - POSTGRES_USER=daniel
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+  python:
+    image: python:3.9-alpine
+    container_name: python
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: python view.py
+    depends_on:
+      - postgres
+    environment:
+      - PGHOST=postgres
+      - PGDATABASE=db
+      - PGUSER=daniel
+      - PGPASSWORD=1234
+    networks:
+      - mynetwork
+
+volumes:
+  pgdata:
+
+networks:
+  mynetwork:
